@@ -1,5 +1,6 @@
 from django.conf.urls import patterns, include, url
 import settings
+from argo_app.views import getDataFromServer, getModelFromApp
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -15,5 +16,7 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     # url(r'^argo_app/', include('argo_app.urls')),
+    url(r'^value/$', getDataFromServer),
+    url(r'^model-id/$', getModelFromApp),
     url(r'^admin/', include(admin.site.urls)),
 )

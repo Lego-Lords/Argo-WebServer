@@ -1,32 +1,45 @@
+import MySQLdb
 from django.shortcuts import render
 from django.http import HttpResponse
-import serial
 from threading import Thread
+import json
 
-def myview(request):
-    conn = MySQLdb.connect("connecting to argo...")
+modelid = ""
+
+def getDataFromServer(request):
+    conn = MySQLdb.connect("localhost", "django_user", "p@ssword", "argo")
+    query = "select currentStep, maxSteps, modelName from argo.argo_app_steps where modelName= '%s'" % modelid
     try:
         cursor = conn.cursor()
-        cursor.execute("select * from argo.steps")
-        # rows = cursor.fetchall()
+        cursor.execute(query)
+        step = cursor.fetchall()
+        print "********************** eto: "
+        print query
+        #for row in step:
+         #   print(row[0])
+        #    print(row[1])
         
-        # now = {{item.field1}}
-        currentStep = cursor.fetchone()
-        maxSteps = cursor.fetchone()
-        modelName = cursor.fetchone()
     finally:
         conn.close()
     
-    return render_to_response(html, {"rows" : rows})
+    # return render_to_response(html, {"rows" : rows})
+    data="iyak"
+    
+    if request.method == 'GET':
+        data = "{ 'data': [{ "
+        for row in step:
+            data += "'currentStep' : '%d', " % row[0]
+            data += "'maxStep' = '%d', " % row[1]
+            data += "'modelName' : '%s'" % row[2]
+        data += " }] }"
+        
+        return HttpResponse(json.dumps(data).strip('"'), content_type='application/json')
+    
+    return HttpResponse(json.dumps(data), content_type='application/json')
 
-    html = "" \
-    "<html>" \
-    "<head>" \
-    "<title>Argo Web Server</title>" \
-    "</head>" \
-    "<body>You are building: %s." % modelName + \
-    "<br>Your current step is: %d." % currentStep + \
-    "<br>Maximum # of steps: %d." % maxSteps + \
-    "</body>" \
-    "</html>"
-    return HttpResponse(html)
+def getModelFromApp(request):
+    global modelid
+    if request.method == 'GET':
+        modelid = request.GET.get('id')
+        print modelid
+    return HttpResponse(modelid)
