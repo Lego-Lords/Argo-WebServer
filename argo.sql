@@ -1,10 +1,8 @@
-CREATE DATABASE  IF NOT EXISTS `argo` /*!40100 DEFAULT CHARACTER SET utf8 */;
-USE `argo`;
--- MySQL dump 10.13  Distrib 5.6.17, for Win32 (x86)
+-- MySQL dump 10.13  Distrib 5.6.17, for Win64 (x86_64)
 --
 -- Host: localhost    Database: argo
 -- ------------------------------------------------------
--- Server version	5.6.19
+-- Server version	5.6.22-log
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -29,6 +27,7 @@ CREATE TABLE `argo_app_steps` (
   `currentStep` int(11) NOT NULL,
   `maxSteps` int(11) NOT NULL,
   `modelName` varchar(45) NOT NULL,
+  `modelSelected` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `modelName` (`modelName`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
@@ -40,7 +39,7 @@ CREATE TABLE `argo_app_steps` (
 
 LOCK TABLES `argo_app_steps` WRITE;
 /*!40000 ALTER TABLE `argo_app_steps` DISABLE KEYS */;
-INSERT INTO `argo_app_steps` VALUES (1,3,3,'Snowcat'),(2,12,13,'Pyramid');
+INSERT INTO `argo_app_steps` VALUES (1,3,3,'Snowcat',0),(2,11,13,'Pyramid',1);
 /*!40000 ALTER TABLE `argo_app_steps` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -354,6 +353,14 @@ LOCK TABLES `south_migrationhistory` WRITE;
 INSERT INTO `south_migrationhistory` VALUES (1,'argo_app','0001_initial','2017-03-18 11:43:44');
 /*!40000 ALTER TABLE `south_migrationhistory` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Dumping events for database 'argo'
+--
+
+--
+-- Dumping routines for database 'argo'
+--
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -364,4 +371,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-03-28 22:23:44
+-- Dump completed on 2017-03-29 17:38:44
