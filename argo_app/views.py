@@ -8,7 +8,7 @@ modelid = ""
 
 def getDataFromServer(request):
     conn = MySQLdb.connect("localhost", "django_user", "p@ssword", "argo")
-    query = "select currentStep, maxSteps, modelName from argo.argo_app_steps where modelName= '%s'" % modelid
+    query = "select currentStep, maxSteps, modelName, hasError, rotValue from argo.argo_app_steps where modelName= '%s'" % modelid
     try:
         cursor = conn.cursor()
         cursor.execute(query)
@@ -30,7 +30,9 @@ def getDataFromServer(request):
         for row in step:
             data += "'currentStep' : '%d', " % row[0]
             data += "'maxStep' = '%d', " % row[1]
-            data += "'modelName' : '%s'" % row[2]
+            data += "'modelName' : '%s', " % row[2]
+            data += "'hasError' : '%d'," % row[3]
+            data += "'rotValue' : '%s'" % row[4]
         data += " }] }"
         
         return HttpResponse(json.dumps(data).strip('"'), content_type='application/json')
@@ -61,6 +63,89 @@ def getModelFromApp(request):
             for row in step:
                 data += "modelName: %s  " % row[0]
                 data += "modelSelected: %d" % row[1]
+            print query
+            print data
+            
+        finally:
+            conn.close()
+    return HttpResponse(modelid)
+
+def getModelFromDb():
+    global modelid
+    try:                        
+        conn = MySQLdb.connect("localhost", "django_user", "p@ssword", "argo")
+        query = "select modelName from argo_app_steps where modelSelected=1"
+        cursor = conn.cursor()
+        cursor.execute(query)
+        step = cursor.fetchall()
+        for row in step:
+            modelid = row[0]
+        print query
+        print modelid
+
+    finally:
+        conn.close()
+    return modelid
+
+def moveToNextStep(request):
+    global modelid
+    if request.method == 'GET':
+        currentstep = request.GET.get('id')
+        print "***** moving to the next step *****"
+        modelid = getModelFromDb()
+        try:                        
+            conn = MySQLdb.connect("localhost", "django_user", "p@ssword", "argo")
+            query = "update argo_app_steps set currentStep='%s'+1 " % currentstep
+            query += "where modelName='%s'" % modelid
+            cursor = conn.cursor()
+            cursor.execute(query)
+            print query
+            conn.commit()
+            conn.close()
+            
+            conn = MySQLdb.connect("localhost", "django_user", "p@ssword", "argo")
+            query = "select modelName, currentStep from argo_app_steps where modelName='%s'" % modelid
+            cursor = conn.cursor()
+            cursor.execute(query)
+            step = cursor.fetchall()
+            data=""
+            for row in step:
+                data += "modelName: %s  " % row[0]
+                data += "currentStep: %d" % row[1]
+            print query
+            print data
+            
+        finally:
+            conn.close()
+    return HttpResponse(modelid)
+
+
+
+def moveToPrevStep(request):
+    global modelid
+    if request.method == 'GET':
+        currentstep = request.GET.get('id')
+        print "***** moving to the prev step *****"
+        modelid = getModelFromDb()
+        try:                        
+            conn = MySQLdb.connect("localhost", "django_user", "p@ssword", "argo")
+            query = "update argo_app_steps set currentStep='%s'-1 " % currentstep
+            query += "where modelName='%s'" % modelid
+            cursor = conn.cursor()
+            cursor.execute(query)
+            print query
+            conn.commit()
+            conn.close()
+            
+            conn = MySQLdb.connect("localhost", "django_user", "p@ssword", "argo")
+            query = "select modelName, currentStep from argo_app_steps where modelName='%s'" % modelid
+            cursor = conn.cursor()
+            cursor.execute(query)
+            step = cursor.fetchall()
+            data=""
+            for row in step:
+                data += "modelName: %s  " % row[0]
+                data += "currentStep: %d" % row[1]
             print query
             print data
             

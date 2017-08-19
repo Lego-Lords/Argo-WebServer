@@ -1,6 +1,6 @@
 from django.conf.urls import patterns, include, url
 import settings
-from argo_app.views import getDataFromServer, getModelFromApp
+from argo_app.views import getDataFromServer, getModelFromApp, moveToNextStep, moveToPrevStep
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -18,5 +18,7 @@ urlpatterns = patterns('',
     # url(r'^argo_app/', include('argo_app.urls')),
     url(r'^value/$', getDataFromServer),
     url(r'^model-id/$', getModelFromApp),
-    url(r'^admin/', include(admin.site.urls)),
+    url(r'^next-step/$', moveToNextStep),
+    url(r'^prev-step/$', moveToPrevStep),
+    url(r'^admin/', include(admin.site.urls))
 )
